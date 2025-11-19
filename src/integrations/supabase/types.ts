@@ -14,7 +14,231 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      notifications: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          message: string
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message: string
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      pallets_production: {
+        Row: {
+          created_at: string | null
+          id: string
+          notes: string | null
+          pallet_size: string
+          production_date: string
+          quantity_produced: number
+          updated_at: string | null
+          user_id: string
+          wood_consumed: number
+          wood_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          pallet_size: string
+          production_date?: string
+          quantity_produced: number
+          updated_at?: string | null
+          user_id: string
+          wood_consumed: number
+          wood_type: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          pallet_size?: string
+          production_date?: string
+          quantity_produced?: number
+          updated_at?: string | null
+          user_id?: string
+          wood_consumed?: number
+          wood_type?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          full_name: string | null
+          id: string
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
+      sales: {
+        Row: {
+          created_at: string | null
+          customer_name: string
+          id: string
+          notes: string | null
+          pallet_size: string
+          payment_method: string
+          quantity: number
+          sale_date: string
+          total_price: number
+          unit_price: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          customer_name: string
+          id?: string
+          notes?: string | null
+          pallet_size: string
+          payment_method: string
+          quantity: number
+          sale_date?: string
+          total_price: number
+          unit_price: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          customer_name?: string
+          id?: string
+          notes?: string | null
+          pallet_size?: string
+          payment_method?: string
+          quantity?: number
+          sale_date?: string
+          total_price?: number
+          unit_price?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      trucks: {
+        Row: {
+          created_at: string | null
+          driver_name: string
+          entry_date: string
+          exit_date: string | null
+          id: string
+          license_plate: string
+          notes: string | null
+          quantity: number
+          status: string
+          supplier: string
+          unit: string
+          updated_at: string | null
+          user_id: string
+          wood_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          driver_name: string
+          entry_date?: string
+          exit_date?: string | null
+          id?: string
+          license_plate: string
+          notes?: string | null
+          quantity: number
+          status?: string
+          supplier: string
+          unit?: string
+          updated_at?: string | null
+          user_id: string
+          wood_type: string
+        }
+        Update: {
+          created_at?: string | null
+          driver_name?: string
+          entry_date?: string
+          exit_date?: string | null
+          id?: string
+          license_plate?: string
+          notes?: string | null
+          quantity?: number
+          status?: string
+          supplier?: string
+          unit?: string
+          updated_at?: string | null
+          user_id?: string
+          wood_type?: string
+        }
+        Relationships: []
+      }
+      wood_stock: {
+        Row: {
+          created_at: string | null
+          current_quantity: number
+          id: string
+          minimum_quantity: number
+          notes: string | null
+          supplier: string | null
+          unit: string
+          updated_at: string | null
+          user_id: string
+          wood_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          current_quantity?: number
+          id?: string
+          minimum_quantity?: number
+          notes?: string | null
+          supplier?: string | null
+          unit?: string
+          updated_at?: string | null
+          user_id: string
+          wood_type: string
+        }
+        Update: {
+          created_at?: string | null
+          current_quantity?: number
+          id?: string
+          minimum_quantity?: number
+          notes?: string | null
+          supplier?: string | null
+          unit?: string
+          updated_at?: string | null
+          user_id?: string
+          wood_type?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
