@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -24,8 +25,42 @@ interface DashboardLayoutProps {
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUnreadNotifications = async () => {
+      const { data } = await supabase
+        .from("notifications")
+        .select("id")
+        .eq("is_read", false);
+      
+      setUnreadCount(data?.length || 0);
+    };
+
+    fetchUnreadNotifications();
+
+    // Subscribe to notifications changes
+    const channel = supabase
+      .channel("notifications-changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "notifications",
+        },
+        () => {
+          fetchUnreadNotifications();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -129,7 +164,14 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <Link to="/notificacoes">
                 <Button variant="ghost" size="icon" className="relative">
                   <Bell className="h-5 w-5" />
-                  <span className="absolute top-1 right-1 h-2 w-2 bg-destructive rounded-full" />
+                  {unreadCount > 0 && (
+                    <Badge 
+                      className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                      variant="destructive"
+                    >
+                      {unreadCount}
+                    </Badge>
+                  )}
                 </Button>
               </Link>
             </div>

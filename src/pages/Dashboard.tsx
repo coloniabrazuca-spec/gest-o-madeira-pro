@@ -13,31 +13,58 @@ import {
 import DashboardLayout from "@/components/DashboardLayout";
 
 const Dashboard = () => {
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    palletsProduced: 0,
+    sales: 0,
+    stockTotal: 0,
+  });
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate("/auth");
-        return;
+    const fetchDashboardData = async () => {
+      try {
+        // Fetch today's production
+        const today = new Date().toISOString().split('T')[0];
+        const { data: productionData } = await supabase
+          .from("pallets_production")
+          .select("quantity_produced")
+          .gte("production_date", today);
+
+        // Fetch today's sales
+        const { data: salesData } = await supabase
+          .from("sales")
+          .select("total_price")
+          .gte("sale_date", today);
+
+        // Fetch stock items
+        const { data: stockData } = await supabase
+          .from("wood_stock")
+          .select("id");
+
+        const palletsProduced = productionData?.reduce(
+          (sum, item) => sum + item.quantity_produced,
+          0
+        ) || 0;
+
+        const salesTotal = salesData?.reduce(
+          (sum, item) => sum + Number(item.total_price),
+          0
+        ) || 0;
+
+        setStats({
+          palletsProduced,
+          sales: salesTotal,
+          stockTotal: stockData?.length || 0,
+        });
+      } catch (error) {
+        console.error("Erro ao carregar dados:", error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
-    checkAuth();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_OUT") {
-        navigate("/auth");
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
+    fetchDashboardData();
+  }, []);
 
   if (loading) {
     return (
@@ -47,14 +74,6 @@ const Dashboard = () => {
     );
   }
 
-  // Mock data - will be replaced with real data from database
-  const todayStats = {
-    palletsProduced: 45,
-    sales: 12800,
-    profit: 8400,
-    expenses: 4400,
-    stockTotal: 156,
-  };
 
   return (
     <DashboardLayout>
@@ -74,8 +93,8 @@ const Dashboard = () => {
               <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-primary">{todayStats.palletsProduced}</div>
-              <p className="text-xs text-muted-foreground">unidades</p>
+              <div className="text-2xl font-bold text-primary">{stats.palletsProduced}</div>
+              <p className="text-xs text-muted-foreground">unidades hoje</p>
             </CardContent>
           </Card>
 
@@ -88,52 +107,22 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-accent">
-                R$ {todayStats.sales.toLocaleString('pt-BR')}
+                R$ {stats.sales.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </div>
-              <p className="text-xs text-muted-foreground">em vendas</p>
+              <p className="text-xs text-muted-foreground">vendas hoje</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Lucro do Dia
+                Tipos de Madeira
               </CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-primary">
-                R$ {todayStats.profit.toLocaleString('pt-BR')}
-              </div>
-              <p className="text-xs text-muted-foreground">+65% margem</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Gastos do Dia
-              </CardTitle>
-              <TrendingDown className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-secondary">
-                R$ {todayStats.expenses.toLocaleString('pt-BR')}
-              </div>
-              <p className="text-xs text-muted-foreground">em despesas</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total em Estoque
-              </CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">{todayStats.stockTotal}</div>
-              <p className="text-xs text-muted-foreground">itens</p>
+              <div className="text-2xl font-bold text-foreground">{stats.stockTotal}</div>
+              <p className="text-xs text-muted-foreground">em estoque</p>
             </CardContent>
           </Card>
         </div>
