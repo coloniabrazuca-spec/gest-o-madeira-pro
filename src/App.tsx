@@ -6,7 +6,15 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
+import Estoque from "./pages/Estoque";
+import Caminhoes from "./pages/Caminhoes";
+import Producao from "./pages/Producao";
+import Vendas from "./pages/Vendas";
+import Notificacoes from "./pages/Notificacoes";
+import Relatorios from "./pages/Relatorios";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -19,15 +27,14 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          {/* Placeholder routes for modules - will be implemented */}
-          <Route path="/estoque" element={<Dashboard />} />
-          <Route path="/caminhoes" element={<Dashboard />} />
-          <Route path="/producao" element={<Dashboard />} />
-          <Route path="/vendas" element={<Dashboard />} />
-          <Route path="/notificacoes" element={<Dashboard />} />
-          <Route path="/relatorios" element={<Dashboard />} />
-          <Route path="/admin" element={<Dashboard />} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/estoque" element={<ProtectedRoute><Estoque /></ProtectedRoute>} />
+          <Route path="/caminhoes" element={<ProtectedRoute><Caminhoes /></ProtectedRoute>} />
+          <Route path="/producao" element={<ProtectedRoute><Producao /></ProtectedRoute>} />
+          <Route path="/vendas" element={<ProtectedRoute><Vendas /></ProtectedRoute>} />
+          <Route path="/notificacoes" element={<ProtectedRoute><Notificacoes /></ProtectedRoute>} />
+          <Route path="/relatorios" element={<ProtectedRoute><Relatorios /></ProtectedRoute>} />
+          <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
